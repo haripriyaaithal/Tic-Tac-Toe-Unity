@@ -16,7 +16,7 @@ public class UserInputHandler : MonoBehaviour {
     }
 
     public void RestartGame() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        gameManager.ResetGame();
     }
 
     public void LoadNextScene() {

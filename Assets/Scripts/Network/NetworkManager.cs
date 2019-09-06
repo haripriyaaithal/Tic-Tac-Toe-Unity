@@ -17,11 +17,10 @@ public class NetworkManager : MonoBehaviour {
     private const string m_roomName = "Lobby";
 
     private SmartFox m_smartFox;
-    
+
     private int m_previousMessageSent = -1;
 
     private void Awake() {
-
         m_smartFox = new SmartFox();
         m_smartFox.ThreadSafeMode = true;
 
@@ -33,9 +32,7 @@ public class NetworkManager : MonoBehaviour {
         m_smartFox.AddEventListener(SFSEvent.PUBLIC_MESSAGE, OnPublicMessage);
 
         m_smartFox.Connect(m_serverIP, m_portNumber);
-
-/*        m_gameManager = FindObjectOfType<GameManager>();
-*/    }
+    }
 
     private void FixedUpdate() {
         if (m_smartFox != null) {

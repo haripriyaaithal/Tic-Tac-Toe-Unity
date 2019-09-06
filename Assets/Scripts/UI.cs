@@ -41,12 +41,18 @@ public class UI : MonoBehaviour {
         IncreaseAlphaValue(child);
 
         // Disable interaction with that button
-        m_boardButtons[buttonIndex].interactable = false;       
+        m_boardButtons[buttonIndex].interactable = false;
     }
 
     private void IncreaseAlphaValue(Image child) {
         var color = child.color;
         color.a = 1f;
+        child.color = color;
+    }
+
+    private void DecreaseAlphaValue(Image child) {
+        var color = child.color;
+        color.a = 0f;
         child.color = color;
     }
 
@@ -61,16 +67,25 @@ public class UI : MonoBehaviour {
     /// <summary>
     /// Display draw message on the screen
     /// </summary>
-    public void ShowDraw() {
-        m_drawText.gameObject.SetActive(true);
-        m_soundManager.PlayGameDrawSound();
+    public void ShowDraw(bool state) {
+        IndicatePlayerTurn(false);
+        IndicateWaitingForInput(false);
+        m_drawText.gameObject.SetActive(state);
+
+        if (state) {
+            m_soundManager.PlayGameDrawSound();
+        }
     }
 
-    private void ShowPlayerOneWon(bool state) {
+    public void ShowPlayerOneWon(bool state) {
+        IndicatePlayerTurn(false);
+        IndicateWaitingForInput(false);
         m_playerOneWon.gameObject.SetActive(state);
     }
 
-    private void ShowPlayerTwoWon(bool state) {
+    public void ShowPlayerTwoWon(bool state) {
+        IndicatePlayerTurn(false);
+        IndicateWaitingForInput(false);
         m_playerTwoWon.gameObject.SetActive(state);
     }
 
@@ -121,5 +136,28 @@ public class UI : MonoBehaviour {
                 }
             }
         }
+
+        if (!forceAssign && state == true) {
+            IndicateWaitingForInput(false);
+            IndicatePlayerTurn(true);
+        } else if (!forceAssign) {
+            IndicateWaitingForInput(true);
+            IndicatePlayerTurn(false);
+        }
+
     }
- }
+
+    public void ResetBoard() {
+        foreach (var button in m_boardButtons) {
+            var child = button.transform.GetChild(0).GetComponent<Image>();
+            DecreaseAlphaValue(child);
+            child.sprite = null;
+        }
+        foreach (var lines in m_winLines) {
+            lines.gameObject.SetActive(false);
+        }
+        EnableInput(true, true);
+
+        
+    }
+}

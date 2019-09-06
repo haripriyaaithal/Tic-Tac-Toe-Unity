@@ -37,8 +37,12 @@ public class GameManager : MonoBehaviour {
     private void SetPlayerNumber() {
         if (m_isPlayerOne) {
             m_currentPlayer = PLAYER_ONE;
+            ui.IndicateWaitingForInput(false);
+            ui.IndicatePlayerTurn(true);
         } else {
             m_currentPlayer = PLAYER_TWO;
+            ui.IndicatePlayerTurn(false);
+            ui.IndicateWaitingForInput(true);
         }
     }
 
@@ -65,28 +69,6 @@ public class GameManager : MonoBehaviour {
         int state = CheckForWinners();
 
         if (state == 0) {
-            // Instruct other player to play
-            if (m_turn == PLAYER_ONE) {
-
-                if (m_currentPlayer == PLAYER_ONE) {
-                    ui.IndicateWaitingForInput(true);
-                    ui.IndicatePlayerTurn(false);
-                } else {
-                    ui.IndicatePlayerTurn(true);
-                    ui.IndicateWaitingForInput(false);
-                }
-
-            } else {
-
-                if (m_currentPlayer == PLAYER_TWO) {
-                    ui.IndicateWaitingForInput(false);
-                    ui.IndicatePlayerTurn(true);
-                } else {
-                    ui.IndicateWaitingForInput(true);
-                    ui.IndicatePlayerTurn(false);
-                }
-
-            }
 
             // Disable input from other player
             if (m_currentPlayer == m_turn) {
@@ -101,21 +83,13 @@ public class GameManager : MonoBehaviour {
     private int CheckForWinners() {
         int score = CheckForWins();
         if (score == 10) {
-            // PlayerOne won
-            ui.IndicatePlayerTurn(false);
-            ui.IndicateWaitingForInput(false);
             return 1;
         } else if (score == -10) {
-            // PlayerTwo won
-            ui.IndicatePlayerTurn(false);
-            ui.IndicateWaitingForInput(false);
             return -1;
         }
 
         if (!CheckForMovesLeft()) {
-            ui.IndicatePlayerTurn(false);
-            ui.IndicateWaitingForInput(false);
-            ui.ShowDraw();
+            ui.ShowDraw(true);
             return -2;
         }
         return 0;
@@ -182,11 +156,11 @@ public class GameManager : MonoBehaviour {
         // Check column for win.
         for (int column = 0; column < 3; column++) {
             if (m_board[0, column] == m_board[1, column] && m_board[1, column] == m_board[2, column]) {
-                if (m_board[0, column] == GameManager.PLAYER_TWO) {
-                    ui.DrawWinLine(column, "column", GameManager.PLAYER_TWO);
+                if (m_board[0, column] == PLAYER_TWO) {
+                    ui.DrawWinLine(column, "column", PLAYER_TWO);
                     return 10;
-                } else if (m_board[0, column] == GameManager.PLAYER_ONE) {
-                    ui.DrawWinLine(column, "column", GameManager.PLAYER_ONE);
+                } else if (m_board[0, column] == PLAYER_ONE) {
+                    ui.DrawWinLine(column, "column", PLAYER_ONE);
                     return -10;
                 }
             }
@@ -197,22 +171,22 @@ public class GameManager : MonoBehaviour {
     private int CheckForWinDiagonals() {
         // Check Diagonal - Left to right
         if (m_board[0, 0] == m_board[1, 1] && m_board[1, 1] == m_board[2, 2]) {
-            if (m_board[0, 0] == GameManager.PLAYER_TWO) {
-                ui.DrawWinLine(0, "diagonal", GameManager.PLAYER_TWO);
+            if (m_board[0, 0] == PLAYER_TWO) {
+                ui.DrawWinLine(0, "diagonal", PLAYER_TWO);
                 return 10;
-            } else if (m_board[0, 0] == GameManager.PLAYER_ONE) {
-                ui.DrawWinLine(0, "diagonal", GameManager.PLAYER_ONE);
+            } else if (m_board[0, 0] == PLAYER_ONE) {
+                ui.DrawWinLine(0, "diagonal", PLAYER_ONE);
                 return -10;
             }
         }
 
         // Check Diagonal - Right to left
         if (m_board[0, 2] == m_board[1, 1] && m_board[1, 1] == m_board[2, 0]) {
-            if (m_board[0, 2] == GameManager.PLAYER_TWO) {
-                ui.DrawWinLine(1, "diagonal", GameManager.PLAYER_TWO);
+            if (m_board[0, 2] == PLAYER_TWO) {
+                ui.DrawWinLine(1, "diagonal", PLAYER_TWO);
                 return 10;
-            } else if (m_board[0, 2] == GameManager.PLAYER_ONE) {
-                ui.DrawWinLine(1, "diagonal", GameManager.PLAYER_ONE);
+            } else if (m_board[0, 2] == PLAYER_ONE) {
+                ui.DrawWinLine(1, "diagonal", PLAYER_ONE);
                 return -10;
             }
         }
@@ -222,7 +196,7 @@ public class GameManager : MonoBehaviour {
     public bool CheckForMovesLeft() {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 3; column++) {
-                if (m_board[row, column] == GameManager.EMPTY) {
+                if (m_board[row, column] == EMPTY) {
                     return true;
                 }
             }
@@ -234,5 +208,28 @@ public class GameManager : MonoBehaviour {
         if (row != -1 && column != -1) {
             m_board[row, column] = player;
         }
+    }
+
+    public void ResetGame() {
+        for (int i = 0; i < m_board.GetLength(0); i++) {
+            for (int j = 0; j < m_board.GetLength(1); j++) {
+                m_board[i, j] = EMPTY;
+            }
+        }
+        ui.ResetBoard();
+        SetPlayerNumber();
+
+        ui.ShowDraw(false);
+        ui.ShowPlayerOneWon(false);
+        ui.ShowPlayerTwoWon(false);
+
+        m_turn = PLAYER_ONE;
+
+        if (m_isPlayerOne) {
+            ui.EnableInput(true, false);
+        } else {
+            ui.EnableInput(false, false);
+        }
+
     }
 }
