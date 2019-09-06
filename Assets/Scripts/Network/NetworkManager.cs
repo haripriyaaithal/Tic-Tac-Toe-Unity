@@ -17,9 +17,11 @@ public class NetworkManager : MonoBehaviour {
     private const string m_roomName = "Lobby";
 
     private SmartFox m_smartFox;
+    private UI ui;
+    private Room room;
 
     private int m_previousMessageSent = -1;
-
+    private bool m_isLoaded = false;
     private void Awake() {
         m_smartFox = new SmartFox();
         m_smartFox.ThreadSafeMode = true;
@@ -34,9 +36,22 @@ public class NetworkManager : MonoBehaviour {
         m_smartFox.Connect(m_serverIP, m_portNumber);
     }
 
+    private void Start() {
+        ui = FindObjectOfType<UI>();
+    }
+
     private void FixedUpdate() {
         if (m_smartFox != null) {
             m_smartFox.ProcessEvents();
+        }
+    }
+
+    private void Update() {
+        if (!m_isLoaded && room != null) {
+            if (room.UserCount > 1) {
+                ui.ShowLoading(false);
+                m_isLoaded = true;
+            }
         }
     }
 
@@ -66,12 +81,16 @@ public class NetworkManager : MonoBehaviour {
 
     private void OnJoinRoom(BaseEvent e) {
         Debug.Log("Join room");
-        Room room = (Room)e.Params["room"];
+        room = (Room)e.Params["room"];
+        
         if (room.UserCount == 1) {
-            Debug.Log("<color=red>PLAYER ONE</color>");
+            ui.ShowLoading(true);
             m_gameManager.SetIsPlayerOne(true);
+
         } else {
             m_gameManager.SetIsPlayerOne(false);
+            m_isLoaded = true;
+            ui.EnableInput(false, false);
         }
     }
 

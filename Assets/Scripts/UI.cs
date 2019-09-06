@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class UI : MonoBehaviour {
 
+    [SerializeField] GameObject m_loading;
+    [SerializeField] GameObject m_board;
+    [SerializeField] GameObject m_playerInstructionText;
+
     [Header("Game Play")]
     [SerializeField] List<Button> m_boardButtons;
     [SerializeField] List<GameObject> m_winLines;
@@ -157,7 +161,17 @@ public class UI : MonoBehaviour {
             lines.gameObject.SetActive(false);
         }
         EnableInput(true, true);
+    }
 
-        
+    public void ShowLoading(bool show) {
+        if (show) {
+            m_board.SetActive(false);
+            m_playerInstructionText.SetActive(false);
+            m_loading.SetActive(true);
+        } else {
+            m_loading.SetActive(false);
+            m_board.SetActive(true);
+            m_playerInstructionText.SetActive(true);
+        }
     }
 }
