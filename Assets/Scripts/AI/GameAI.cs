@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using UnityEngine;
 
 public class GameAI : MonoBehaviour {
@@ -25,55 +25,33 @@ public class GameAI : MonoBehaviour {
     /// <summary>
     /// Call this function when AI has to play
     /// </summary>
-    public void AITurn() {
+    public void PlayerTwoTurn() {
 
-        int buttonIndex;
-
-        buttonIndex = CheckForWinningMove();
-
-        if (buttonIndex == -1) {
-            int tempRow, tempCol;
-            if (isFirstTurn) {  // Select random position during the first turn
-                isFirstTurn = false;
-                do {
-                    buttonIndex = Random.Range(0, 9);
-                    tempRow = (int)gameManager.MapButtonIndexTo2DArray(buttonIndex).x;
-                    tempCol = (int)gameManager.MapButtonIndexTo2DArray(buttonIndex).y;
-                } while (board[tempRow, tempCol] != GameManager.EMPTY);
-                UpdateBoardValues(tempRow, tempCol, GameManager.AI);
-
-            } else {
-                buttonIndex = FindBestMove();
-            }
-        }
-
-        if (buttonIndex >= 0) {
-            StartCoroutine(DrawWithRandomDelay(buttonIndex));
-        }
+       
     }
 
     private int CheckForWinningMove() {
         for (int row = 0; row < 3; row++) {
-            if (Sum(board[row, 0], board[row, 1], board[row, 2]) == (GameManager.AI + GameManager.AI) && HasWinningChance("row", row, out int winRow, out int winColumn)) {
-                UpdateBoardValues(winRow, winColumn, GameManager.AI);
+            if (Sum(board[row, 0], board[row, 1], board[row, 2]) == (GameManager.PLAYER_TWO + GameManager.PLAYER_TWO) && HasWinningChance("row", row, out int winRow, out int winColumn)) {
+                UpdateBoardValues(winRow, winColumn, GameManager.PLAYER_TWO);
                 return Map2DArrayToButtonIndex(winRow, winColumn);
             }
         }
 
         for (int column = 0; column < 3; column++) {
-            if (Sum(board[0, column], board[1, column], board[2, column]) == (GameManager.AI + GameManager.AI) && HasWinningChance("column", column, out int winRow, out int winColumn)) {
-                UpdateBoardValues(winRow, winColumn, GameManager.AI);
+            if (Sum(board[0, column], board[1, column], board[2, column]) == (GameManager.PLAYER_TWO + GameManager.PLAYER_TWO) && HasWinningChance("column", column, out int winRow, out int winColumn)) {
+                UpdateBoardValues(winRow, winColumn, GameManager.PLAYER_TWO);
                 return Map2DArrayToButtonIndex(winRow, winColumn);
             }
         }
 
-        if (Sum(board[0, 0], board[1, 1], board[2, 2]) == (GameManager.AI + GameManager.AI) && HasWinningChance("diagonal1", -1, out int winningRow, out int winningColumn)) {
-            UpdateBoardValues(winningRow, winningColumn, GameManager.AI);
+        if (Sum(board[0, 0], board[1, 1], board[2, 2]) == (GameManager.PLAYER_TWO + GameManager.PLAYER_TWO) && HasWinningChance("diagonal1", -1, out int winningRow, out int winningColumn)) {
+            UpdateBoardValues(winningRow, winningColumn, GameManager.PLAYER_TWO);
             return Map2DArrayToButtonIndex(winningRow, winningColumn);
         }
 
-        if (Sum(board[0, 2], board[1, 1], board[2, 0]) == (GameManager.AI + GameManager.AI) && HasWinningChance("diagonal2", -1, out winningRow, out winningColumn)) {
-            UpdateBoardValues(winningRow, winningColumn, GameManager.AI);
+        if (Sum(board[0, 2], board[1, 1], board[2, 0]) == (GameManager.PLAYER_TWO + GameManager.PLAYER_TWO) && HasWinningChance("diagonal2", -1, out winningRow, out winningColumn)) {
+            UpdateBoardValues(winningRow, winningColumn, GameManager.PLAYER_TWO);
             return Map2DArrayToButtonIndex(winningRow, winningColumn);
         }
         return -1;
@@ -134,7 +112,7 @@ public class GameAI : MonoBehaviour {
         return a + b + c;
     }
 
-    IEnumerator DrawWithRandomDelay(int buttonIndex) {
+    *//*IEnumerator DrawWithRandomDelay(int buttonIndex) {
         float seconds = Random.Range(0.1f, 3f);
         yield return new WaitForSeconds(seconds);
         MarkOnBoard(buttonIndex);
@@ -143,13 +121,13 @@ public class GameAI : MonoBehaviour {
         CheckForWins();
         SetMarkWin(false);
 
-        ui.IndicateAITurn(false);
-        ui.IndicatePlayerTurn(true);
+        ui.IndicatePlayerTwoTurn(false);
+        ui.IndicatePlayerOneTurn(true);
         ui.EnableInput(true, false);
-    }
+    }*//*
 
     private void MarkOnBoard(int buttonIndex) {
-        ui.DrawOnBoard(buttonIndex, GameManager.AI);
+        ui.DrawOnBoard(buttonIndex, GameManager.PLAYER_TWO);
         gameManager.ChangeTurn();
     }
 
@@ -162,7 +140,7 @@ public class GameAI : MonoBehaviour {
             for (int column = 0; column < 3; column++) {
                 if (board[row, column] == GameManager.EMPTY) {
                     // Make move
-                    board[row, column] = GameManager.AI;
+                    board[row, column] = GameManager.PLAYER_TWO;
 
                     int moveValue = minimax(board, 0, false); // 0 -> depth, false -> maximizing
 
@@ -178,7 +156,7 @@ public class GameAI : MonoBehaviour {
             }
         }
 
-        UpdateBoardValues(rowSelected, columnSelected, GameManager.AI);
+        UpdateBoardValues(rowSelected, columnSelected, GameManager.PLAYER_TWO);
         return Map2DArrayToButtonIndex(rowSelected, columnSelected);
     }
 
@@ -198,7 +176,7 @@ public class GameAI : MonoBehaviour {
     private int minimax(int[,] board, int depth, bool isMaximizing) {
         int score = CheckForWins(board);
 
-        // Game Won, 10 -> AI, -10 -> Player
+        // Game Won, 10 -> PlayerTwo, -10 -> PlayerOne
         if (score == 10 || score == -10) {
             return score;
         }
@@ -215,7 +193,7 @@ public class GameAI : MonoBehaviour {
                 for (int column = 0; column < 3; column++) {
                     if (board[row, column] == GameManager.EMPTY) {
                         // Make move
-                        board[row, column] = GameManager.AI;
+                        board[row, column] = GameManager.PLAYER_TWO;
 
                         best = Max(best, minimax(board, depth + 1, !isMaximizing));
 
@@ -232,7 +210,7 @@ public class GameAI : MonoBehaviour {
                 for (int column = 0; column < 3; column++) {
                     if (board[row, column] == GameManager.EMPTY) {
                         // Make move
-                        board[row, column] = GameManager.PLAYER;
+                        board[row, column] = GameManager.PLAYER_ONE;
 
                         best = Min(best, minimax(board, depth + 1, !isMaximizing));
 
@@ -297,14 +275,14 @@ public class GameAI : MonoBehaviour {
         // Check row for win.
         for (int row = 0; row < 3; row++) {
             if (board[row, 0] == board[row, 1] && board[row, 1] == board[row, 2]) {
-                if (board[row, 0] == GameManager.AI) {
+                if (board[row, 0] == GameManager.PLAYER_TWO) {
                     if (markWin) {
-                        ui.DrawWinLine(row, "row", GameManager.AI);
+                        ui.DrawWinLine(row, "row", GameManager.PLAYER_TWO);
                     }
                     return 10;
-                } else if (board[row, 0] == GameManager.PLAYER) {
+                } else if (board[row, 0] == GameManager.PLAYER_ONE) {
                     if (markWin) {
-                        ui.DrawWinLine(row, "row", GameManager.PLAYER);
+                        ui.DrawWinLine(row, "row", GameManager.PLAYER_ONE);
                     }
                     return -10;
                 }
@@ -317,14 +295,14 @@ public class GameAI : MonoBehaviour {
         // Check column for win.
         for (int column = 0; column < 3; column++) {
             if (board[0, column] == board[1, column] && board[1, column] == board[2, column]) {
-                if (board[0, column] == GameManager.AI) {
+                if (board[0, column] == GameManager.PLAYER_TWO) {
                     if (markWin) {
-                        ui.DrawWinLine(column, "column", GameManager.AI);
+                        ui.DrawWinLine(column, "column", GameManager.PLAYER_TWO);
                     }
                     return 10;
-                } else if (board[0, column] == GameManager.PLAYER) {
+                } else if (board[0, column] == GameManager.PLAYER_ONE) {
                     if (markWin) {
-                        ui.DrawWinLine(column, "column", GameManager.PLAYER);
+                        ui.DrawWinLine(column, "column", GameManager.PLAYER_ONE);
                     }
                     return -10;
                 }
@@ -336,14 +314,14 @@ public class GameAI : MonoBehaviour {
     private int CheckForWinDiagonals() {
         // Check Diagonal - Left to right
         if (board[0, 0] == board[1, 1] && board[1, 1] == board[2, 2]) {
-            if (board[0, 0] == GameManager.AI) {
+            if (board[0, 0] == GameManager.PLAYER_TWO) {
                 if (markWin) {
-                    ui.DrawWinLine(0, "diagonal", GameManager.AI);
+                    ui.DrawWinLine(0, "diagonal", GameManager.PLAYER_TWO);
                 }
                 return 10;
-            } else if (board[0, 0] == GameManager.PLAYER) {
+            } else if (board[0, 0] == GameManager.PLAYER_ONE) {
                 if (markWin) {
-                    ui.DrawWinLine(0, "diagonal", GameManager.PLAYER);
+                    ui.DrawWinLine(0, "diagonal", GameManager.PLAYER_ONE);
                 }
                 return -10;
             }
@@ -351,14 +329,14 @@ public class GameAI : MonoBehaviour {
 
         // Check Diagonal - Right to left
         if (board[0, 2] == board[1, 1] && board[1, 1] == board[2, 0]) {
-            if (board[0, 2] == GameManager.AI) {
+            if (board[0, 2] == GameManager.PLAYER_TWO) {
                 if (markWin) {
-                    ui.DrawWinLine(1, "diagonal", GameManager.AI);
+                    ui.DrawWinLine(1, "diagonal", GameManager.PLAYER_TWO);
                 }
                 return 10;
-            } else if (board[0, 2] == GameManager.PLAYER) {
+            } else if (board[0, 2] == GameManager.PLAYER_ONE) {
                 if (markWin) {
-                    ui.DrawWinLine(1, "diagonal", GameManager.PLAYER);
+                    ui.DrawWinLine(1, "diagonal", GameManager.PLAYER_ONE);
                 }
                 return -10;
             }
@@ -372,4 +350,4 @@ public class GameAI : MonoBehaviour {
     public void SetMarkWin(bool state) {
         markWin = state;
     }
-}
+}*/

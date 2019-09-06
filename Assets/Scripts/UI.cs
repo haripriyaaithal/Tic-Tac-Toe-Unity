@@ -6,42 +6,42 @@ using UnityEngine.UI;
 public class UI : MonoBehaviour {
 
     [Header("Game Play")]
-    [SerializeField] List<Button> boardButtons;
-    [SerializeField] List<GameObject> winLines;
+    [SerializeField] List<Button> m_boardButtons;
+    [SerializeField] List<GameObject> m_winLines;
     [SerializeField] Sprite x;
     [SerializeField] Sprite o;
 
     [Header("Text Mesh Pros")]
-    [SerializeField] GameObject aiTurn;
-    [SerializeField] GameObject playerTurn;
-    [SerializeField] GameObject aiWon;
-    [SerializeField] GameObject playerWon;
-    [SerializeField] GameObject drawText;
+    [SerializeField] GameObject m_playerTurn;
+    [SerializeField] GameObject m_waitingForInput;
+    [SerializeField] GameObject m_playerOneWon;
+    [SerializeField] GameObject m_playerTwoWon;
+    [SerializeField] GameObject m_drawText;
 
-    private SoundManager soundManager;
+    private SoundManager m_soundManager;
 
     private void Start() {
-        soundManager = FindObjectOfType<SoundManager>();
+        m_soundManager = FindObjectOfType<SoundManager>();
     }
 
     /// <summary>
     /// The sprite on the button will be changed to the value passed as argument
     /// </summary>
     public void DrawOnBoard(int buttonIndex, int player) {
-        var child = boardButtons[buttonIndex].transform.GetChild(0).GetComponent<Image>();
+        var child = m_boardButtons[buttonIndex].transform.GetChild(0).GetComponent<Image>();
 
-        if (player == GameManager.PLAYER) {
+        if (player == GameManager.PLAYER_ONE) {
             child.sprite = x;
-            soundManager.PlayPlayerSound();
-        } else if (player == GameManager.AI) {
+            m_soundManager.PlayPlayerOneSound();
+        } else if (player == GameManager.PLAYER_TWO) {
             child.sprite = o;
-            soundManager.PlayAISound();
+            m_soundManager.PlayPlayerTwoSound();
         }
 
         IncreaseAlphaValue(child);
 
         // Disable interaction with that button
-        boardButtons[buttonIndex].interactable = false;       
+        m_boardButtons[buttonIndex].interactable = false;       
     }
 
     private void IncreaseAlphaValue(Image child) {
@@ -50,28 +50,28 @@ public class UI : MonoBehaviour {
         child.color = color;
     }
 
-    public void IndicateAITurn(bool state) {
-        aiTurn.gameObject.SetActive(state);
+    public void IndicateWaitingForInput(bool state) {
+        m_waitingForInput.gameObject.SetActive(state);
     }
 
     public void IndicatePlayerTurn(bool state) {
-        playerTurn.gameObject.SetActive(state);
+        m_playerTurn.gameObject.SetActive(state);
     }
 
     /// <summary>
     /// Display draw message on the screen
     /// </summary>
     public void ShowDraw() {
-        drawText.gameObject.SetActive(true);
-        soundManager.PlayGameDrawSound();
+        m_drawText.gameObject.SetActive(true);
+        m_soundManager.PlayGameDrawSound();
     }
 
-    private void ShowPlayerWon(bool state) {
-        playerWon.gameObject.SetActive(state);
+    private void ShowPlayerOneWon(bool state) {
+        m_playerOneWon.gameObject.SetActive(state);
     }
 
-    private void ShowAIWon(bool state) {
-        aiWon.gameObject.SetActive(state);
+    private void ShowPlayerTwoWon(bool state) {
+        m_playerTwoWon.gameObject.SetActive(state);
     }
 
     /// <summary>
@@ -81,27 +81,27 @@ public class UI : MonoBehaviour {
 
         StartCoroutine(DrawAfterDelay());
 
-        if (player == GameManager.AI) {
-            ShowAIWon(true);
-            soundManager.PlayAIWon();
-        } else if (player == GameManager.PLAYER) {
-            ShowPlayerWon(true);
-            soundManager.PlayPlayerWon();
+        if (player == GameManager.PLAYER_TWO) {
+            ShowPlayerTwoWon(true);
+            m_soundManager.PlayPlayerTwoWon();
+        } else if (player == GameManager.PLAYER_ONE) {
+            ShowPlayerOneWon(true);
+            m_soundManager.PlayPlayerWon();
         }
 
         if (rowOrColumn.Equals("row")) {
-            winLines[index].SetActive(true);
+            m_winLines[index].SetActive(true);
         } else if (rowOrColumn.Equals("column")) {
-            winLines[index + 3].gameObject.SetActive(true);
+            m_winLines[index + 3].gameObject.SetActive(true);
         } else if (rowOrColumn.Equals("diagonal")) {
-            winLines[index + 6].gameObject.SetActive(true);
+            m_winLines[index + 6].gameObject.SetActive(true);
         }
     }
 
     private IEnumerator DrawAfterDelay() {
         yield return null; // Wait for end of frame
         IndicatePlayerTurn(false);
-        IndicateAITurn(false);
+        IndicateWaitingForInput(false);
         EnableInput(false, true);
 
     }
@@ -110,7 +110,7 @@ public class UI : MonoBehaviour {
     /// Call this function to enable and disable input from user
     /// </summary>
     public void EnableInput(bool state, bool forceAssign) {
-        foreach (Button button in boardButtons) {
+        foreach (Button button in m_boardButtons) {
             if (forceAssign) {
                 button.interactable = state;
             } else {

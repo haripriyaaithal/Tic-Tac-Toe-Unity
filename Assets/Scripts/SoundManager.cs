@@ -19,11 +19,11 @@ public class SoundManager : MonoBehaviour {
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void PlayPlayerSound() {
+    public void PlayPlayerOneSound() {
         audioSource.PlayOneShot(playerTouch);
     }
 
-    public void PlayAISound() {
+    public void PlayPlayerTwoSound() {
         audioSource.PlayOneShot(aiSound);
     }
 
@@ -31,7 +31,7 @@ public class SoundManager : MonoBehaviour {
         audioSource.PlayOneShot(playerWon);
     }
 
-    public void PlayAIWon() {
+    public void PlayPlayerTwoWon() {
         audioSource.PlayOneShot(aiWon);
     }
 
